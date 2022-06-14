@@ -33,7 +33,7 @@ footer, header, hgroup, menu, nav, section {
 	display: block;
 }
 body {
-	line-height: 1;
+line-height: 1;
   font-family:'Noto Sans KR', sans-serif;
   background-color:${(props) => props.theme.bgColor}
 }

@@ -1,78 +1,85 @@
-import { DragDropContext, DropResult } from 'react-beautiful-dnd';
-import { useRecoilState } from 'recoil';
 import styled from 'styled-components';
-import { toDoState } from './atoms';
-import Board from './components/Board';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 
 const Wrapper = styled.div`
-  display: flex;
-  max-width: 680px;
-  width: 100%;
-  margin: 0 auto;
-
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+    height: 100vh;
+    overflow: auto;
+    white-space: nowrap;
+`;
+const Boards = styled.div`
+    padding-top: 10px;
+    padding-left: 10px;
+    display: inline-flex;
 `;
 
-const Boards = styled.div`
-  display: grid;
-  width: 100%;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 10px;
+const Board = styled.div`
+    padding-top: 10px;
+    padding-left: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: ${(props) => props.theme.boardColor};
+    width: 260px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    min-height: 210px;
+`;
+
+const Title = styled.h1`
+    font-weight: 500;
+    font-size: 20px;
+    margin-bottom: 10px;
+    width: 90%;
+    text-align: left;
+`;
+
+const Card = styled.div`
+    width: 90%;
+    background-color: white;
+    margin-bottom: 10px;
+    padding: 10px;
+`;
+
+const Text = styled.p`
+    box-sizing: border-box;
+    width: 100%;
+    white-space: normal;
+    line-height: 1.25rem;
 `;
 
 function App() {
-  const [toDos, setToDos] = useRecoilState(toDoState);
-
-  const onDragEnd = (info: DropResult) => {
-    const { destination, source } = info;
-
-    if (destination?.droppableId === source.droppableId) {
-      setToDos((allBoards) => {
-        const boardCopy = [...allBoards[source.droppableId]];
-        const taskObj = boardCopy[source.index];
-        boardCopy.splice(source.index, 1);
-        boardCopy.splice(destination.index, 0, taskObj);
-
-        return {
-          ...allBoards,
-          [source.droppableId]: boardCopy,
-        };
-      });
-    } else {
-      setToDos((allBoards) => {
-        if (!destination) return { ...allBoards };
-
-        const sourceBoardCopy = [...allBoards[source.droppableId]];
-        const taskObj = sourceBoardCopy[source.index];
-        const destinationBoardCopy = [...allBoards[destination.droppableId]];
-
-        sourceBoardCopy.splice(source.index, 1);
-        destinationBoardCopy.splice(destination.index, 0, taskObj);
-
-        return {
-          ...allBoards,
-          [source.droppableId]: sourceBoardCopy,
-          [destination.droppableId]: destinationBoardCopy,
-        };
-      });
-    }
-
-    // setToDos(() => {
-    // });
-  };
-  return (
-    <DragDropContext onDragEnd={onDragEnd}>
-      <Wrapper>
-        <Boards>
-          {Object.keys(toDos).map((boardId) => (
-            <Board boardId={boardId} key={boardId} toDos={toDos[boardId]} />
-          ))}
-        </Boards>
-      </Wrapper>
-    </DragDropContext>
-  );
+    const onDragEnd = () => {
+        return null;
+    };
+    return (
+        <DragDropContext onDragEnd={onDragEnd}>
+            <Wrapper>
+                <Boards>
+                    <Droppable droppableId='ONE'>
+                        {(magic) => (
+                            <Board
+                                ref={magic.innerRef}
+                                {...magic.droppableProps}
+                            >
+                                <Draggable index={1} draggableId='two'>
+                                    {(magic) => (
+                                        <Card
+                                            ref={magic.innerRef}
+                                            {...magic.dragHandleProps}
+                                            {...magic.draggableProps}
+                                        >
+                                            <Text>Hello!</Text>
+                                        </Card>
+                                    )}
+                                </Draggable>
+                            </Board>
+                        )}
+                    </Droppable>
+                </Boards>
+            </Wrapper>
+        </DragDropContext>
+    );
 }
 
 export default App;
