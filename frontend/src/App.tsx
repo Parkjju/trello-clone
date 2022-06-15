@@ -51,6 +51,19 @@ function App() {
                 const copyBoard = [...allBoard[source.droppableId]];
                 const deleteData = copyBoard.splice(source.index, 1);
                 copyBoard.splice(destination.index, 0, deleteData[0]);
+
+                const JsonString =
+                    '' + localStorage.getItem(source.droppableId);
+                let categoryItems = JSON.parse(JsonString);
+
+                if (Array.isArray(categoryItems)) {
+                    categoryItems = [...copyBoard];
+                    localStorage.setItem(
+                        `${source.droppableId}`,
+                        JSON.stringify(categoryItems)
+                    );
+                }
+
                 return {
                     ...allBoard,
                     [source.droppableId]: copyBoard,
@@ -69,6 +82,29 @@ function App() {
                     0,
                     deleteData[0]
                 );
+
+                const sourceJsonString =
+                    '' + localStorage.getItem(`${source.droppableId}`);
+                const destinationJsonString =
+                    '' + localStorage.getItem(`${destination.droppableId}`);
+
+                let sourceJsonItem = JSON.parse(sourceJsonString);
+                let destinationJsonItem = JSON.parse(destinationJsonString);
+
+                if (Array.isArray(sourceJsonItem)) {
+                    sourceJsonItem = [...copySourceBoard];
+                    localStorage.setItem(
+                        `${source.droppableId}`,
+                        JSON.stringify(sourceJsonItem)
+                    );
+                }
+                if (Array.isArray(destinationJsonItem)) {
+                    destinationJsonItem = [...copyDestinationBoard];
+                    localStorage.setItem(
+                        `${destination.droppableId}`,
+                        JSON.stringify(destinationJsonItem)
+                    );
+                }
 
                 return {
                     ...allBoard,
