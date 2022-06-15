@@ -54,6 +54,15 @@ function Board({ category }: IBoardProps) {
                 text: todo,
             };
             setValue('todo', '');
+
+            const Item = JSON.parse(
+                JSON.stringify(localStorage.getItem(`${category}`))
+            );
+            console.log(Item);
+            // Item.push(newTodo);
+            // JSON.stringify(Item);
+            // localStorage.setItem(`${category}`, Item);
+
             return {
                 ...allBoard,
                 [category]: [...allBoard[category], newTodo],

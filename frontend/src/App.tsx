@@ -3,6 +3,7 @@ import { DragDropContext, DropResult } from 'react-beautiful-dnd';
 import { useRecoilState } from 'recoil';
 import { todoState } from './atoms';
 import Board from './components/Board';
+import { useEffect } from 'react';
 
 const Wrapper = styled.div`
     height: 100vh;
@@ -17,7 +18,16 @@ const Boards = styled.div`
 
 function App() {
     const [todos, setTodos] = useRecoilState(todoState);
-    const onDragEnd = ({ destination, source, draggableId }: DropResult) => {
+
+    useEffect(() => {
+        Object.keys(todos).map((category) => {
+            if (!localStorage.getItem(category)) {
+                localStorage.setItem(category, `[]`);
+            }
+        });
+    }, []);
+
+    const onDragEnd = ({ destination, source }: DropResult) => {
         if (!destination) return;
         if (destination?.droppableId === source.droppableId) {
             setTodos((allBoard) => {
