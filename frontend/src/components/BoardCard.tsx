@@ -12,6 +12,7 @@ const Card = styled.div`
 interface ICardProps {
     index: number;
     draggableId: string;
+    text: string;
 }
 
 const Text = styled.p`
@@ -22,7 +23,7 @@ const Text = styled.p`
     font-size: 14px;
 `;
 
-function BoardCard({ index, draggableId }: ICardProps) {
+function BoardCard({ index, draggableId, text }: ICardProps) {
     return (
         <Draggable index={index} draggableId={draggableId}>
             {(magic) => (
@@ -31,7 +32,7 @@ function BoardCard({ index, draggableId }: ICardProps) {
                     {...magic.dragHandleProps}
                     {...magic.draggableProps}
                 >
-                    <Text>{draggableId}</Text>
+                    <Text>{text}</Text>
                 </Card>
             )}
         </Draggable>
