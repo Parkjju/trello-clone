@@ -23,6 +23,23 @@ function App() {
         Object.keys(todos).map((category) => {
             if (!localStorage.getItem(category)) {
                 localStorage.setItem(category, `[]`);
+            } else {
+                const jsonString = '' + localStorage.getItem(`${category}`);
+                const categoryItem = JSON.parse(jsonString);
+
+                setTodos((emptyBoard) => {
+                    const copyBoard = [...emptyBoard[category]];
+                    if (Array.isArray(categoryItem)) {
+                        categoryItem.map((item) => {
+                            copyBoard.push(item);
+                        });
+                    }
+
+                    return {
+                        ...emptyBoard,
+                        [category]: copyBoard,
+                    };
+                });
             }
         });
     }, []);

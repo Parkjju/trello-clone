@@ -55,10 +55,13 @@ function Board({ category }: IBoardProps) {
             };
             setValue('todo', '');
 
-            const Item = JSON.parse(
-                JSON.stringify(localStorage.getItem(`${category}`))
-            );
-            console.log(Item);
+            const JsonString = '' + localStorage.getItem(`${category}`);
+            let Item = JSON.parse(JsonString);
+
+            Item.push(newTodo);
+
+            localStorage.setItem(category, JSON.stringify(Item));
+
             // Item.push(newTodo);
             // JSON.stringify(Item);
             // localStorage.setItem(`${category}`, Item);
