@@ -4,6 +4,7 @@ import { useRecoilState } from 'recoil';
 import { todoState } from './atoms';
 import Board from './components/Board';
 import { useEffect } from 'react';
+import { useForm } from 'react-hook-form';
 
 const Wrapper = styled.div`
     height: 100vh;
@@ -16,33 +17,66 @@ const Boards = styled.div`
     display: inline-flex;
 `;
 
+interface IForm {
+    category: string;
+}
+
 function App() {
     const [todos, setTodos] = useRecoilState(todoState);
+    const { register, handleSubmit, setValue } = useForm<IForm>();
 
     useEffect(() => {
         Object.keys(todos).map((category) => {
-            if (!localStorage.getItem(category)) {
-                localStorage.setItem(category, `[]`);
-            } else {
-                const jsonString = '' + localStorage.getItem(`${category}`);
-                const categoryItem = JSON.parse(jsonString);
+            if (!localStorage.getItem(`${category}`)) {
+                localStorage.setItem(`${category}`, '[]');
+            }
+        });
+        Object.keys(localStorage).map((category) => {
+            const regex = /reactQ/;
 
-                setTodos((emptyBoard) => {
-                    const copyBoard = [...emptyBoard[category]];
-                    if (Array.isArray(categoryItem)) {
-                        categoryItem.map((item) => {
-                            copyBoard.push(item);
-                        });
-                    }
+            if (!category.match(regex)) {
+                if (!localStorage.getItem(category)) {
+                    localStorage.setItem(category, `[]`);
+                } else {
+                    const jsonString = '' + localStorage.getItem(`${category}`);
+                    const categoryItem = JSON.parse(jsonString);
 
-                    return {
-                        ...emptyBoard,
-                        [category]: copyBoard,
-                    };
-                });
+                    setTodos((allBoard) => {
+                        // 보드 특정 카테고리가 undefined면 -> 로컬에 셋팅 하고 state에도 세팅
+                        if (!allBoard[category]) {
+                            const stringifiedCategoryItem =
+                                JSON.stringify(categoryItem);
+                            localStorage.setItem(
+                                `${category}`,
+                                stringifiedCategoryItem
+                            );
+                            return {
+                                ...allBoard,
+                                [category]: [...categoryItem],
+                            };
+                        } else {
+                            return {
+                                ...allBoard,
+                                [category]: [...categoryItem],
+                            };
+                        }
+                    });
+                }
             }
         });
     }, []);
+
+    const onValid = ({ category }: IForm) => {
+        setValue('category', '');
+        setTodos((allBoard) => {
+            localStorage.setItem(`${category}`, '[]');
+
+            return {
+                ...allBoard,
+                [`${category}`]: [],
+            };
+        });
+    };
 
     const onDragEnd = ({ destination, source }: DropResult) => {
         if (!destination) return;
@@ -114,6 +148,7 @@ function App() {
             });
         }
     };
+    console.log(todos);
     return (
         <DragDropContext onDragEnd={onDragEnd}>
             <Wrapper>
@@ -122,6 +157,13 @@ function App() {
                         return <Board key={index} category={category} />;
                     })}
                 </Boards>
+                <form onSubmit={handleSubmit(onValid)}>
+                    <input
+                        type='text'
+                        {...register('category')}
+                        placeholder='Add custom category...'
+                    />
+                </form>
             </Wrapper>
         </DragDropContext>
     );
